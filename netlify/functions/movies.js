@@ -16,40 +16,54 @@ exports.handler = async function(event) {
   let moviesFromCsv = await csv(moviesFile)
 
   // write the movies to the back-end console, check it out
- console.log(moviesFromCsv)
+  // console.log(moviesFromCsv)
 
   // 🔥 hw6: your recipe and code starts here!
+
+   // Get the parameters
   let year = event.queryStringParameters.year
   let genre = event.queryStringParameters.genre
   
-  // create a new object to hold the count and movies data
-  // let moviesToReturn = {}
-  
-  // start with an empty array for the movies
-  // returnValue.movies = []
-  
-    let moviesToReturn= {
+  // If these two parameters are not provided, return a simple String with an error message.
+  if (year == undefined || genre == undefined) {
+    return {
+      statusCode: 200, // https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+      body: `Nope!` // a string of data
+    }  
+  }
+
+  // If these two parameters are provided, return an Object, which includes two key-value pairs – numResults and movies.
+  else {
+  let moviesToReturn= {
       numResults: 0,
       movies: []
     }
- 
-  for (let i=0; i < moviesFromCsv.length; i++) {
+    // Loop through the movies, for each one:
+    for (let i=0; i < moviesFromCsv.length; i++) {
+   
+    // Store each post from the Reddit API in memory
     let movies = moviesFromCsv[i]
-    
-    moviesToReturn.movies.push(movies)
-    
-  }
 
-  
-  // add the number of listings to the returned listings Object
+    // Only provide results for the given year and genre.
+    if (movies.startYear == year && movies.genres.includes(genre) == true && movies.runtimeMinutes != `\\N`) {
+    
+  // Create a new object where the value of movies should be an Array of Objects containing the following details on each movie.
+   let postObject = {
+    primaryTitle: movies.primaryTitle,
+    startYear: movies.startYear,
+    genres: movies.genres
+   }
+      moviesToReturn.movies.push(postObject)
+    }
+  }
+  // add the number of movies to the returned movies Object
   moviesToReturn.numResults = moviesToReturn.movies.length
-  
 
   // a lambda function returns a status code and a string of data
   return {
   statusCode: 200, // https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
   body: JSON.stringify(moviesToReturn) // a string of data
-
+  }
   }
 } 
   
