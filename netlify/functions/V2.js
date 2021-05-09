@@ -45,7 +45,7 @@ exports.handler = async function(event) {
     let movies = moviesFromCsv[i]
 
     // Only provide results for the given year and genre.
-    if (movies.startYear == year && movies.genres == genre) {
+    if (movies.startYear == year && movies.genres.includes(genre) == true && movies.runtimeMinutes != `\\N`) {
     
   // Create a new object where the value of movies should be an Array of Objects containing the following details on each movie.
    let postObject = {
